@@ -8,10 +8,26 @@
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-            <%@ include file="header.jsp" %>
+
+    <%@ include file="header.jsp" %>
 
     <div class="container">
         <h1>Book a Ride</h1>
+        
+        <!-- Display success message if booking is confirmed -->
+        <% 
+            String bookingStatus = request.getParameter("status");
+            if ("success".equals(bookingStatus)) { 
+        %>
+            <div class="success-message">
+                <p>Booking Successful! Your ride has been scheduled.</p>
+            </div>
+        <% } else if ("error".equals(bookingStatus)) { %>
+            <div class="error-message">
+                <p>Booking Failed! Please try again.</p>
+            </div>
+        <% } %>
+
         <form action="bookingServlet" method="post">
             <div class="input-group">
                 <label for="pickupLocation">Pickup Location</label>
@@ -28,7 +44,8 @@
             <button type="submit">Book Ride</button>
         </form>
     </div>
-            <%@ include file="footer.jsp" %>
+
+    <%@ include file="footer.jsp" %>
 
 </body>
 </html>

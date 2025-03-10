@@ -27,82 +27,42 @@
     </form>
 
     <script>
-        // Handle form submission and PDF generation
-        $('#generateBillForm').submit(function (e) {
-            e.preventDefault();
+$('#generateBillForm').submit(function (e) {
+    e.preventDefault();
 
-            // Get booking ID from form input
-            var bookingId = $('#bookingId').val();
+    var bookingId = $('#bookingId').val();
 
-            // Hardcoded values based on bookingId for this example
-            // This should be replaced with actual dynamic values from the database
-            var bookingData = {
-                1: {
-                    pickupLocation: "Colombo",
-                    destination: "Mount Lavinia",
-                    totalAmount: "1200.00",
-                    status: "Confirmed"
-                },
-                2: {
-                    pickupLocation: "Kandy",
-                    destination: "Nuwara Eliya",
-                    totalAmount: "1400.00",
-                    status: "Pending"
-                },
-                3: {
-                    pickupLocation: "Galle",
-                    destination: "Matara",
-                    totalAmount: "1750.00",
-                    status: "Completed"
-                },
-                4: {
-                    pickupLocation: "Negombo",
-                    destination: "Colombo",
-                    totalAmount: "850.00",
-                    status: "Cancelled"
-                },
-                5: {
-                    pickupLocation: "Anuradhapura",
-                    destination: "Polonnaruwa",
-                    totalAmount: "1900.00",
-                    status: "Confirmed"
-                }
-            };
+    $.ajax({
+        url: "GenerateBillServlet",
+        type: "POST",
+        data: { bookingId: bookingId },
+        dataType: "json",
+        success: function (response) {
+            if (response.success) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-            // Get the data for the entered bookingId
-            var booking = bookingData[bookingId];
+                doc.setFontSize(20);
+                doc.text('Mega City Cab - Invoice', 105, 20, null, null, 'center');
+                doc.setFontSize(12);
+                doc.text('Booking ID: ' + response.bookingId, 10, 40);
+                doc.text('Pickup Location: ' + response.pickupLocation, 10, 50);
+                doc.text('Destination: ' + response.destination, 10, 60);
+                doc.text('Total: $' + response.totalAmount, 10, 70);
+                doc.text('Status: ' + response.status, 10, 80);
 
-            // If booking is not found, display an error
-            if (!booking) {
-                alert("Invalid Booking ID");
-                return;
+                // Save PDF
+                doc.save('invoice_' + response.bookingId + '.pdf');
+            } else {
+                alert(response.error);
             }
+        },
+        error: function () {
+            alert("Error fetching booking details.");
+        }
+    });
+});
 
-            // Create a new jsPDF instance
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Add content to the PDF
-            doc.setFontSize(20);
-            doc.text('Mega City Cab - Invoice', 105, 20, null, null, 'center');
-            doc.setFontSize(12);
-            doc.text('Booking ID: ' + bookingId, 10, 40);
-            doc.text('Pickup Location: ' + booking.pickupLocation, 10, 50);
-            doc.text('Destination: ' + booking.destination, 10, 60);
-            doc.text('Total: $' + booking.totalAmount, 10, 70);
-            doc.text('Status: ' + booking.status, 10, 80);
-
-            // Add Menu to the PDF document (hardcoded)
-            doc.text('--- Menu ---', 10, 90);
-            doc.text('1. Colombo to Mount Lavinia - $1000', 10, 100);
-            doc.text('2. Colombo to Negombo - $1500', 10, 110);
-            doc.text('3. Colombo to Kandy - $2000', 10, 120);
-            doc.text('4. Colombo to Galle - $2500', 10, 130);
-            doc.text('5. Colombo to Anuradhapura - $3000', 10, 140);
-
-            // Save the PDF with the filename including booking ID
-            doc.save('invoice_' + bookingId + '.pdf');
-        });
     </script>
 
     <%@ include file="footer.jsp" %>

@@ -6,6 +6,7 @@
     <title>Booking Details - Mega City Cab</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
+        /* Modal Styling */
         .modal {
             display: none;
             position: fixed;
@@ -17,7 +18,6 @@
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.4);
         }
-
         .modal-content {
             background-color: #fefefe;
             margin: 10% auto;
@@ -27,7 +27,6 @@
             max-width: 600px;
             position: relative;
         }
-
         .close {
             color: #aaa;
             font-size: 28px;
@@ -37,7 +36,6 @@
             top: 10px;
             cursor: pointer;
         }
-
         .update-btn {
             padding: 8px 15px;
             margin: 5px;
@@ -48,15 +46,12 @@
             cursor: pointer;
             font-size: 1em;
         }
-
         .update-btn:hover {
             background-color: #0056b3;
         }
-
         .input-group {
             margin: 10px 0;
         }
-
         select, input {
             padding: 10px;
             width: 100%;
@@ -67,7 +62,7 @@
     </style>
 </head>
 <body>
-                <%@ include file="header.jsp" %>
+    <%@ include file="header.jsp" %>
 
     <div class="container">
         <h1>Your Bookings</h1>
@@ -83,46 +78,21 @@
                 </tr>
             </thead>
             <tbody>
+                <% 
+                    // Example dynamic data loop, assuming you have a list of bookings in your request
+                    for (Booking booking : bookings) {
+                %>
                 <tr>
-                    <td>1</td>
-                    <td>Colombo</td>
-                    <td>Mount Lavinia</td>
-                    <td>1000.00</td>
-                    <td>Confirmed</td>
-                    <td></td>
+                    <td><%= booking.getBookingId() %></td>
+                    <td><%= booking.getPickupLocation() %></td>
+                    <td><%= booking.getDestination() %></td>
+                    <td><%= booking.getTotal() %></td>
+                    <td><%= booking.getStatus() %></td>
+                    <td>
+                        <button class="update-btn" onclick="openModal(<%= booking.getBookingId() %>, '<%= booking.getPickupLocation() %>', '<%= booking.getDestination() %>', <%= booking.getTotal() %>, <%= booking.getTax() %>, <%= booking.getDiscount() %>)">Update Booking</button>
+                    </td>
                 </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Kandy</td>
-                    <td>Nuwara Eliya</td>
-                    <td>1200.00</td>
-                    <td>Pending</td>
-                    <td><button class="update-btn" onclick="openModal(1)">Update Booking</button></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Galle</td>
-                    <td>Matara</td>
-                    <td>1500.00</td>
-                    <td>Completed</td>
-                     <td></td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Negombo</td>
-                    <td>Colombo</td>
-                    <td>800.00</td>
-                    <td>Cancelled</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Anuradhapura</td>
-                    <td>Polonnaruwa</td>
-                    <td>1800.00</td>
-                    <td>Confirmed</td>
-                    <td></td>
-                </tr>
+                <% } %>
             </tbody>
         </table>
     </div>
@@ -166,8 +136,11 @@
     </div>
 
     <script>
-        function openModal(bookingId) {
+        function openModal(bookingId, pickupLocation, destination, totalFare, tax, discount) {
             document.getElementById("bookingId").value = bookingId;
+            document.getElementById("totalFare").value = totalFare;
+            document.getElementById("tax").value = tax;
+            document.getElementById("discount").value = discount;
             document.getElementById("updateModal").style.display = "block";
         }
 
@@ -181,9 +154,7 @@
             }
         }
     </script>
-    
-                <%@ include file="footer.jsp" %>
 
+    <%@ include file="footer.jsp" %>
 </body>
 </html>
-
